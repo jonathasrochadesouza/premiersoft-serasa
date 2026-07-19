@@ -72,6 +72,8 @@ docker compose up -d --build
 
 A request `06` simula a variacao de peso, envia `Idempotency-Key` e salva o `weighingId` quando a pesagem estabiliza.
 
+![Demonstracao do fluxo no Postman](docs/assets/postman-flow-demo.gif)
+
 ## Como validar
 
 Com a API rodando, execute o smoke test automatizado para validar o fluxo HTTP completo:
