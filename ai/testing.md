@@ -24,8 +24,11 @@ Há implementação de aplicação TypeScript/Fastify com testes unitários e de
 - `curl http://127.0.0.1:3333/health`
 - `curl -I http://127.0.0.1:3333/docs`
 - `CI=true PATH=/Users/jonathasrochadesouza/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin:/Users/jonathasrochadesouza/.cache/codex-runtimes/codex-primary-runtime/dependencies/bin/fallback:$PATH /Users/jonathasrochadesouza/.cache/codex-runtimes/codex-primary-runtime/dependencies/bin/fallback/pnpm run smoke:api`
+- `docker run --rm -i -e BASE_URL=http://host.docker.internal:3333 -e SCALE_COUNT=3 -e LOAD_DURATION=8s -v "$PWD/scripts:/scripts" grafana/k6 run /scripts/k6-scale-readings.js`
+- `CI=true PATH=/Users/jonathasrochadesouza/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin:/Users/jonathasrochadesouza/.cache/codex-runtimes/codex-primary-runtime/dependencies/bin/fallback:$PATH /Users/jonathasrochadesouza/.cache/codex-runtimes/codex-primary-runtime/dependencies/bin/fallback/pnpm run load:100ms:docker`
 
 Observação: os comandos foram executados com o Node.js empacotado do Codex porque o Node.js instalado via Homebrew neste ambiente falhou ao carregar `libsimdjson.29.dylib`.
+O k6 foi validado via Docker porque a instalação local via Homebrew falhou: `/opt/homebrew` pertence a outro usuário e não está gravável pelo usuário atual.
 
 ## Baseline antes de concluir
 

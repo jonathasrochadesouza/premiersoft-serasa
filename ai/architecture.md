@@ -35,6 +35,7 @@ O repositório contém uma aplicação backend TypeScript em `src/`, com API HTT
 - `Dockerfile` e `docker-compose.yml`: build e execução containerizada.
 - `docs/openapi.yaml`: contrato OpenAPI versionado.
 - `docs/postman_collection.json`: collection Postman sequenciada para validação manual.
+- `scripts/k6-scale-readings.js`: teste de carga HTTP com k6 para simular balanças concorrentes enviando leituras a cada 100ms.
 
 ## Dados
 

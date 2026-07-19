@@ -10,6 +10,8 @@
     "start": "node dist/src/server.js",
     "test": "vitest run",
     "smoke:api": "node scripts/smoke-test.mjs",
+    "load:100ms": "k6 run scripts/k6-scale-readings.js",
+    "load:100ms:docker": "docker run --rm -i -e BASE_URL=http://host.docker.internal:3333 -e SCALE_COUNT=3 -e LOAD_DURATION=8s -v \"$PWD/scripts:/scripts\" grafana/k6 run /scripts/k6-scale-readings.js",
     "prisma:generate": "prisma generate",
     "prisma:migrate": "prisma migrate dev",
     "db:deploy": "prisma migrate deploy",
