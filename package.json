@@ -1,0 +1,37 @@
+{
+  "name": "premiersoft-serasa",
+  "version": "1.0.0",
+  "description": "Backend para ingestao, estabilizacao e armazenamento de leituras de peso de balancas de graos.",
+  "type": "module",
+  "packageManager": "pnpm@11.9.0",
+  "scripts": {
+    "dev": "tsx watch src/server.ts",
+    "build": "tsc",
+    "start": "node dist/src/server.js",
+    "test": "vitest run",
+    "smoke:api": "node scripts/smoke-test.mjs",
+    "prisma:generate": "prisma generate",
+    "prisma:migrate": "prisma migrate dev",
+    "db:deploy": "prisma migrate deploy",
+    "docker:build": "docker compose build",
+    "docker:up": "docker compose up -d --build",
+    "docker:logs": "docker compose logs -f api",
+    "docker:down": "docker compose down",
+    "prisma:studio": "prisma studio"
+  },
+  "dependencies": {
+    "@fastify/cors": "^9.0.1",
+    "@fastify/swagger": "^8.15.0",
+    "@fastify/swagger-ui": "^4.1.0",
+    "@prisma/client": "^5.22.0",
+    "fastify": "^4.28.1",
+    "prisma": "^5.22.0",
+    "zod": "^3.23.8"
+  },
+  "devDependencies": {
+    "@types/node": "^22.10.2",
+    "tsx": "^4.19.2",
+    "typescript": "^5.7.2",
+    "vitest": "^2.1.8"
+  }
+}

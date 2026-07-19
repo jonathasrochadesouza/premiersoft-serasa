@@ -33,7 +33,9 @@ O público conhecido é uma empresa de transporte de grãos com diversas filiais
 
 ## Decisões
 
-Nenhuma decisão de produto foi registrada além dos requisitos descritos no desafio técnico.
+- Relatórios entregues: pesagens por filial, rentabilidade por grão, produtividade por caminhão, estoque de doca e throughput por balança.
+- A margem de venda varia entre 5% e 20%, calculada de forma inversamente proporcional ao estoque do tipo de grão na doca.
+- A pesagem usa a transação de transporte ativa mais recente do caminhão.
 
 ## Não objetivos
 
@@ -43,10 +45,8 @@ Nenhuma decisão de produto foi registrada além dos requisitos descritos no des
 ## Pendências
 
 - Definir nome público do produto, caso seja diferente do nome do repositório.
-- Definir estratégia de estabilização.
-- Definir quais relatórios administrativos serão entregues.
-- Definir se os diferenciais serão implementados: arquitetura sugerida, autenticação de balanças, retentativa, idempotência e expansão do processo.
+- Definir regras operacionais adicionais para múltiplas transações simultâneas do mesmo caminhão, caso isso seja possível no negócio real.
 
 ## Validação
 
-Os requisitos foram extraídos do PDF `desafio-tecnico-backend_ia.pdf`. Ainda não há validação por testes ou execução de aplicação.
+Os requisitos foram extraídos do PDF `desafio-tecnico-backend_ia.pdf` e do pedido anexado na conversa. Build TypeScript e testes automatizados foram executados com sucesso.

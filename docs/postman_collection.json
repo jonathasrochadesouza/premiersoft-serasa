@@ -1,0 +1,286 @@
+{
+  "info": {
+    "name": "Premiersoft Serasa Scale API",
+    "description": "Fluxo completo para testar cadastros, transacao, ingestao de leituras estabilizadas, pesagens e relatorios.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    { "key": "baseUrl", "value": "http://localhost:3333" },
+    { "key": "scaleToken", "value": "token-seguro-123" },
+    { "key": "truckId", "value": "" },
+    { "key": "grainTypeId", "value": "" },
+    { "key": "branchId", "value": "" },
+    { "key": "transactionId", "value": "" },
+    { "key": "weighingId", "value": "" },
+    { "key": "plate", "value": "ABC1D23" },
+    { "key": "scaleId", "value": "scale-1" },
+    { "key": "grainName", "value": "Soja" },
+    { "key": "branchName", "value": "Filial Sul" },
+    { "key": "readingIndex", "value": "0" },
+    { "key": "readingWeight", "value": "30000" },
+    { "key": "idempotencyKey", "value": "scale-reading-0" }
+  ],
+  "item": [
+    {
+      "name": "00 Health",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('status 200', () => pm.response.to.have.status(200));",
+              "const suffix = Date.now().toString().slice(-6);",
+              "pm.collectionVariables.set('plate', `TST${suffix.slice(-4)}`);",
+              "pm.collectionVariables.set('scaleId', `scale-${suffix}`);",
+              "pm.collectionVariables.set('grainName', `Soja ${suffix}`);",
+              "pm.collectionVariables.set('branchName', `Filial ${suffix}`);",
+              "pm.collectionVariables.set('readingIndex', '0');",
+              "pm.collectionVariables.set('weighingId', '');"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": "{{baseUrl}}/health"
+      }
+    },
+    {
+      "name": "01 Criar caminhao",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('status 201', () => pm.response.to.have.status(201));",
+              "pm.collectionVariables.set('truckId', pm.response.json().id);"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"plate\": \"{{plate}}\",\n  \"tareKg\": 10000\n}"
+        },
+        "url": "{{baseUrl}}/trucks"
+      }
+    },
+    {
+      "name": "02 Criar tipo de grao",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('status 201', () => pm.response.to.have.status(201));",
+              "pm.collectionVariables.set('grainTypeId', pm.response.json().id);"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"name\": \"{{grainName}}\",\n  \"purchasePricePerTon\": 1500,\n  \"dockStockKg\": 10000\n}"
+        },
+        "url": "{{baseUrl}}/grain-types"
+      }
+    },
+    {
+      "name": "03 Criar filial",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('status 201', () => pm.response.to.have.status(201));",
+              "pm.collectionVariables.set('branchId', pm.response.json().id);"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"name\": \"{{branchName}}\",\n  \"city\": \"Londrina\",\n  \"state\": \"PR\"\n}"
+        },
+        "url": "{{baseUrl}}/branches"
+      }
+    },
+    {
+      "name": "04 Criar balanca",
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"id\": \"{{scaleId}}\",\n  \"name\": \"Balanca 1\",\n  \"branchId\": \"{{branchId}}\",\n  \"token\": \"{{scaleToken}}\"\n}"
+        },
+        "url": "{{baseUrl}}/scales"
+      }
+    },
+    {
+      "name": "05 Criar transacao de transporte",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('status 201', () => pm.response.to.have.status(201));",
+              "pm.collectionVariables.set('transactionId', pm.response.json().id);",
+              "pm.collectionVariables.set('readingIndex', '0');"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"truckId\": \"{{truckId}}\",\n  \"grainTypeId\": \"{{grainTypeId}}\",\n  \"branchId\": \"{{branchId}}\"\n}"
+        },
+        "url": "{{baseUrl}}/transport-transactions"
+      }
+    },
+    {
+      "name": "06 Enviar leitura da balanca - rodar 31 iteracoes com delay 100ms",
+      "event": [
+        {
+          "listen": "prerequest",
+          "script": {
+            "exec": [
+              "const index = Number(pm.collectionVariables.get('readingIndex') || '0');",
+              "pm.collectionVariables.set('readingWeight', String(30000 + (index % 4)));",
+              "pm.collectionVariables.set('idempotencyKey', `${pm.collectionVariables.get('scaleId')}-reading-${index}`);",
+              "pm.collectionVariables.set('readingIndex', String(index + 1));"
+            ],
+            "type": "text/javascript"
+          }
+        },
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('status 202', () => pm.response.to.have.status(202));",
+              "const json = pm.response.json();",
+              "if (json.status === 'stabilized') { pm.collectionVariables.set('weighingId', json.weighingId); }"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          { "key": "Content-Type", "value": "application/json" },
+          { "key": "X-Scale-Token", "value": "{{scaleToken}}" },
+          { "key": "Idempotency-Key", "value": "{{idempotencyKey}}" }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"id\": \"{{scaleId}}\",\n  \"plate\": \"{{plate}}\",\n  \"weight\": {{readingWeight}}\n}"
+        },
+        "url": "{{baseUrl}}/scale-readings"
+      }
+    },
+    {
+      "name": "07 Listar pesagens",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": "{{baseUrl}}/weighings"
+      }
+    },
+    {
+      "name": "08 Buscar pesagem por id",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": "{{baseUrl}}/weighings/{{weighingId}}"
+      }
+    },
+    {
+      "name": "09 Relatorio pesagens por filial",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": "{{baseUrl}}/reports/weighings-by-branch"
+      }
+    },
+    {
+      "name": "10 Relatorio rentabilidade por grao",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": "{{baseUrl}}/reports/grain-profitability"
+      }
+    },
+    {
+      "name": "11 Relatorio produtividade por caminhao",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": "{{baseUrl}}/reports/truck-productivity"
+      }
+    },
+    {
+      "name": "12 Relatorio estoque da doca",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": "{{baseUrl}}/reports/dock-stock"
+      }
+    },
+    {
+      "name": "13 Relatorio throughput por balanca",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": "{{baseUrl}}/reports/scale-throughput"
+      }
+    },
+    {
+      "name": "14 Finalizar transacao",
+      "request": {
+        "method": "PATCH",
+        "header": [],
+        "url": "{{baseUrl}}/transport-transactions/{{transactionId}}/finish"
+      }
+    },
+    {
+      "name": "15 Listar cadastros",
+      "item": [
+        {
+          "name": "Trucks",
+          "request": { "method": "GET", "header": [], "url": "{{baseUrl}}/trucks" }
+        },
+        {
+          "name": "Grain Types",
+          "request": { "method": "GET", "header": [], "url": "{{baseUrl}}/grain-types" }
+        },
+        {
+          "name": "Branches",
+          "request": { "method": "GET", "header": [], "url": "{{baseUrl}}/branches" }
+        },
+        {
+          "name": "Scales",
+          "request": { "method": "GET", "header": [], "url": "{{baseUrl}}/scales" }
+        }
+      ]
+    }
+  ]
+}

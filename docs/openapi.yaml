@@ -1,0 +1,351 @@
+openapi: 3.0.3
+info:
+  title: Premiersoft Serasa Scale API
+  version: 1.0.0
+  description: API para cadastro, ingestao, estabilizacao e consulta de pesagens de transporte de graos.
+servers:
+  - url: http://localhost:3333
+tags:
+  - name: Health
+  - name: Trucks
+  - name: Grain Types
+  - name: Branches
+  - name: Scales
+  - name: Transport Transactions
+  - name: Scale Readings
+  - name: Weighings
+  - name: Reports
+paths:
+  /health:
+    get:
+      tags: [Health]
+      summary: Verifica se a API esta respondendo.
+      responses:
+        "200":
+          description: API saudavel.
+  /trucks:
+    post:
+      tags: [Trucks]
+      summary: Cadastra um caminhao.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateTruck"
+            example:
+              plate: ABC1D23
+              tareKg: 10000
+      responses:
+        "201":
+          description: Caminhao criado.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Truck"
+    get:
+      tags: [Trucks]
+      summary: Lista caminhoes.
+      responses:
+        "200":
+          description: Lista de caminhoes.
+  /grain-types:
+    post:
+      tags: [Grain Types]
+      summary: Cadastra um tipo de grao.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateGrainType"
+            example:
+              name: Soja
+              purchasePricePerTon: 1500
+              dockStockKg: 10000
+      responses:
+        "201":
+          description: Tipo de grao criado.
+    get:
+      tags: [Grain Types]
+      summary: Lista tipos de grao.
+      responses:
+        "200":
+          description: Lista de tipos de grao.
+  /branches:
+    post:
+      tags: [Branches]
+      summary: Cadastra uma filial.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateBranch"
+            example:
+              name: Filial Sul
+              city: Londrina
+              state: PR
+      responses:
+        "201":
+          description: Filial criada.
+    get:
+      tags: [Branches]
+      summary: Lista filiais.
+      responses:
+        "200":
+          description: Lista de filiais.
+  /scales:
+    post:
+      tags: [Scales]
+      summary: Cadastra uma balanca autorizada.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateScale"
+            example:
+              id: scale-1
+              name: Balanca 1
+              branchId: clxbranch
+              token: token-seguro-123
+      responses:
+        "201":
+          description: Balanca criada.
+    get:
+      tags: [Scales]
+      summary: Lista balancas.
+      responses:
+        "200":
+          description: Lista de balancas.
+  /transport-transactions:
+    post:
+      tags: [Transport Transactions]
+      summary: Inicia uma transacao de transporte.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateTransportTransaction"
+      responses:
+        "201":
+          description: Transacao criada.
+  /transport-transactions/{id}/finish:
+    patch:
+      tags: [Transport Transactions]
+      summary: Finaliza uma transacao de transporte.
+      parameters:
+        - $ref: "#/components/parameters/IdPath"
+      responses:
+        "200":
+          description: Transacao finalizada.
+  /scale-readings:
+    post:
+      tags: [Scale Readings]
+      summary: Recebe uma leitura enviada por uma balanca.
+      description: Responde rapidamente e so persiste pesagem quando a janela movel estabiliza.
+      parameters:
+        - name: X-Scale-Token
+          in: header
+          required: true
+          schema:
+            type: string
+          example: token-seguro-123
+        - name: Idempotency-Key
+          in: header
+          required: false
+          schema:
+            type: string
+          example: leitura-abc-001
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ScaleReading"
+            example:
+              id: scale-1
+              plate: ABC1D23
+              weight: 30000
+      responses:
+        "202":
+          description: Leitura aceita ou pesagem estabilizada.
+          content:
+            application/json:
+              schema:
+                oneOf:
+                  - $ref: "#/components/schemas/ScaleReadingAccepted"
+                  - $ref: "#/components/schemas/ScaleReadingStabilized"
+        "401":
+          description: Token da balanca invalido.
+  /weighings:
+    get:
+      tags: [Weighings]
+      summary: Lista pesagens estabilizadas.
+      responses:
+        "200":
+          description: Lista de pesagens.
+  /weighings/{id}:
+    get:
+      tags: [Weighings]
+      summary: Busca uma pesagem por id.
+      parameters:
+        - $ref: "#/components/parameters/IdPath"
+      responses:
+        "200":
+          description: Pesagem encontrada.
+  /reports/weighings-by-branch:
+    get:
+      tags: [Reports]
+      summary: Volume e custo por filial.
+      responses:
+        "200":
+          description: Relatorio por filial.
+  /reports/grain-profitability:
+    get:
+      tags: [Reports]
+      summary: Rentabilidade estimada por tipo de grao.
+      responses:
+        "200":
+          description: Relatorio de rentabilidade.
+  /reports/truck-productivity:
+    get:
+      tags: [Reports]
+      summary: Produtividade por caminhao.
+      responses:
+        "200":
+          description: Relatorio de produtividade.
+  /reports/dock-stock:
+    get:
+      tags: [Reports]
+      summary: Estoque disponivel por tipo de grao na doca.
+      responses:
+        "200":
+          description: Relatorio de estoque.
+  /reports/scale-throughput:
+    get:
+      tags: [Reports]
+      summary: Quantidade de pesagens e volume por balanca.
+      responses:
+        "200":
+          description: Relatorio de throughput.
+components:
+  parameters:
+    IdPath:
+      name: id
+      in: path
+      required: true
+      schema:
+        type: string
+  schemas:
+    CreateTruck:
+      type: object
+      required: [plate, tareKg]
+      properties:
+        plate:
+          type: string
+          example: ABC1D23
+        tareKg:
+          type: number
+          example: 10000
+    Truck:
+      allOf:
+        - $ref: "#/components/schemas/CreateTruck"
+        - type: object
+          properties:
+            id:
+              type: string
+            createdAt:
+              type: string
+              format: date-time
+    CreateGrainType:
+      type: object
+      required: [name, purchasePricePerTon]
+      properties:
+        name:
+          type: string
+          example: Soja
+        purchasePricePerTon:
+          type: number
+          example: 1500
+        dockStockKg:
+          type: number
+          default: 0
+          example: 10000
+    CreateBranch:
+      type: object
+      required: [name, city, state]
+      properties:
+        name:
+          type: string
+          example: Filial Sul
+        city:
+          type: string
+          example: Londrina
+        state:
+          type: string
+          example: PR
+    CreateScale:
+      type: object
+      required: [id, name, branchId, token]
+      properties:
+        id:
+          type: string
+          example: scale-1
+        name:
+          type: string
+          example: Balanca 1
+        branchId:
+          type: string
+        token:
+          type: string
+          minLength: 12
+          example: token-seguro-123
+    CreateTransportTransaction:
+      type: object
+      required: [truckId, grainTypeId, branchId]
+      properties:
+        truckId:
+          type: string
+        grainTypeId:
+          type: string
+        branchId:
+          type: string
+    ScaleReading:
+      type: object
+      required: [id, plate, weight]
+      properties:
+        id:
+          type: string
+          example: scale-1
+        plate:
+          type: string
+          example: ABC1D23
+        weight:
+          type: number
+          example: 30000
+    ScaleReadingAccepted:
+      type: object
+      properties:
+        status:
+          type: string
+          example: accepted
+        stabilization:
+          type: string
+          example: collecting
+        readingCount:
+          type: number
+          example: 12
+    ScaleReadingStabilized:
+      type: object
+      properties:
+        status:
+          type: string
+          example: stabilized
+        weighingId:
+          type: string
+        grossWeightKg:
+          type: number
+          example: 30001.43

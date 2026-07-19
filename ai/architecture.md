@@ -2,24 +2,39 @@
 
 ## Estado atual
 
-O repositório ainda não contém implementação de aplicação. O único artefato observado antes da criação deste harness foi o diretório `.git`.
+O repositório contém uma aplicação backend TypeScript em `src/`, com API HTTP Fastify, domínio de estabilização, serviço de ingestão, persistência Prisma e testes automatizados.
 
 ## Stack
 
-Nenhuma stack foi definida ainda.
+- Node.js com TypeScript.
+- Fastify para HTTP.
+- Prisma ORM.
+- SQLite para execução local.
+- Zod para validação de payload.
+- Vitest para testes.
+- Swagger UI exposto em `/docs`.
+- Docker Compose para execução reproduzível da API com SQLite em volume.
 
 ## Decisões
 
-Nenhuma decisão de arquitetura foi registrada.
+- A persistência local usa SQLite via Prisma para simplificar setup do desafio técnico.
+- O endpoint `POST /scale-readings` processa a janela em memória e responde com `202 Accepted`.
+- Leituras brutas não são persistidas como pesagens finais; apenas pesagens estabilizadas são salvas.
+- A autenticação de balanças usa token por balança no header `X-Scale-Token`.
+- A idempotência usa header opcional `Idempotency-Key`, registrado em tabela própria.
+- O Docker é o caminho recomendado de execução para avaliação; o container aplica migrações com `prisma migrate deploy` antes de iniciar.
 
 ## Componentes ou módulos
 
-Componentes esperados pelo desafio técnico:
-- Cadastros de caminhão, tipo de grão, filial, balança e transação de transporte.
-- Endpoint HTTP para receber leituras de balanças no formato `{ "id": "<id da balança>", "plate": "<placa do caminhão>", "weight": <peso total> }`.
-- Mecanismo de estabilização para decidir quando uma sequência de leituras representa peso confiável.
-- Persistência de pesagens estabilizadas.
-- Relatórios ou estatísticas administrativas.
+- `src/domain`: regras puras de estabilização, precificação e erros.
+- `src/services`: caso de uso de recepção de leituras e persistência de pesagem consolidada.
+- `src/http`: app Fastify, rotas e schemas Zod.
+- `src/infra`: cliente Prisma.
+- `prisma/schema.prisma`: modelo relacional.
+- `tests`: testes unitários e de integração.
+- `Dockerfile` e `docker-compose.yml`: build e execução containerizada.
+- `docs/openapi.yaml`: contrato OpenAPI versionado.
+- `docs/postman_collection.json`: collection Postman sequenciada para validação manual.
 
 ## Dados
 
@@ -35,19 +50,15 @@ Dados de domínio citados no desafio:
 
 Integração conhecida:
 - Requisições HTTP enviadas por ESP32, simuláveis por chamadas HTTP ao endpoint de recepção.
+- Swagger/OpenAPI exposto pela própria aplicação em `/docs`.
 
 Integrações pendentes:
 - Câmera LPR não tem protocolo detalhado no desafio.
-- Autenticação de balanças é diferencial, ainda sem decisão de mecanismo.
 
 ## Pendências
 
-- Definir stack, arquitetura de execução e persistência.
-- Definir estratégia exata de estabilização.
-- Definir modelo de dados e relacionamentos.
-- Definir autenticação, idempotência e retentativas, caso sejam implementadas.
-- Definir formato e escopo dos relatórios.
+- Avaliar evolução para fila, workers, cache distribuído e observabilidade se houver requisito de produção multi-instância.
 
 ## Validação
 
-Nenhuma validação técnica foi executada, pois ainda não há implementação de aplicação.
+Build TypeScript e testes automatizados foram executados com sucesso usando pnpm e o Node.js empacotado do Codex. Docker Compose também foi validado com build da imagem, aplicação da migração Prisma, container saudável, `/health` e Swagger UI em `/docs`.

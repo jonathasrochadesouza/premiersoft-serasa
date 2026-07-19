@@ -1,0 +1,89 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model Truck {
+  id           String                 @id @default(cuid())
+  plate        String                 @unique
+  tareKg       Float
+  createdAt    DateTime               @default(now())
+  transactions TransportTransaction[]
+  weighings    Weighing[]
+}
+
+model GrainType {
+  id                  String                 @id @default(cuid())
+  name                String                 @unique
+  purchasePricePerTon Float
+  dockStockKg         Float                  @default(0)
+  createdAt           DateTime               @default(now())
+  transactions        TransportTransaction[]
+  weighings           Weighing[]
+}
+
+model Branch {
+  id           String                 @id @default(cuid())
+  name         String
+  city         String
+  state        String
+  createdAt    DateTime               @default(now())
+  scales       Scale[]
+  transactions TransportTransaction[]
+}
+
+model Scale {
+  id        String    @id
+  name      String
+  branchId  String
+  token     String
+  createdAt DateTime  @default(now())
+  branch    Branch    @relation(fields: [branchId], references: [id])
+  weighings Weighing[]
+}
+
+model TransportTransaction {
+  id          String     @id @default(cuid())
+  truckId     String
+  grainTypeId String
+  branchId    String
+  startedAt   DateTime   @default(now())
+  finishedAt  DateTime?
+  createdAt   DateTime   @default(now())
+  truck       Truck      @relation(fields: [truckId], references: [id])
+  grainType   GrainType  @relation(fields: [grainTypeId], references: [id])
+  branch      Branch     @relation(fields: [branchId], references: [id])
+  weighings   Weighing[]
+}
+
+model Weighing {
+  id                     String               @id @default(cuid())
+  plate                  String
+  grossWeightKg          Float
+  tareKg                 Float
+  netWeightKg            Float
+  purchaseCost           Float
+  salePricePerTon        Float
+  appliedMarginPercent   Float
+  weighedAt              DateTime             @default(now())
+  scaleId                String
+  truckId                String
+  grainTypeId            String
+  transactionId          String
+  presenceKey            String               @unique
+  scale                  Scale                @relation(fields: [scaleId], references: [id])
+  truck                  Truck                @relation(fields: [truckId], references: [id])
+  grainType              GrainType            @relation(fields: [grainTypeId], references: [id])
+  transaction            TransportTransaction @relation(fields: [transactionId], references: [id])
+}
+
+model IdempotencyRecord {
+  key       String   @id
+  scope     String
+  response  String
+  createdAt DateTime @default(now())
+}
