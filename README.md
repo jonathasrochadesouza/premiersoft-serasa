@@ -62,6 +62,8 @@ docker compose up -d --build
 - Arquivo OpenAPI versionado: [docs/openapi.yaml](/Users/jonathasrochadesouza/Developer/repositories/premiersoft-serasa/docs/openapi.yaml)
 - Collection Postman: [docs/postman_collection.json](/Users/jonathasrochadesouza/Developer/repositories/premiersoft-serasa/docs/postman_collection.json)
 
+![Swagger UI da API](docs/assets/swagger-api-docs.png)
+
 ## Como testar no Postman
 
 1. Importe `docs/postman_collection.json`.
