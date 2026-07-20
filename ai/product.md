@@ -2,7 +2,7 @@
 
 ## Visão
 
-Criar uma solução backend robusta para receber, estabilizar e armazenar leituras de peso de balanças em uma operação de transporte de grãos. A solução deve transformar medições instáveis e frequentes em registros confiáveis de pesagem, permitindo calcular peso líquido, custo da carga e informações administrativas.
+Criar uma solução backend robusta para receber, estabilizar e armazenar leituras de peso de balanças em uma operação de transporte de grãos. A solução deve transformar medições instáveis em pesagens estabilizadas, associando-as a caminhão, balança, filial e tipo de grão para cálculo confiável de carga, custo e análises administrativas.
 
 ## Público
 
@@ -29,7 +29,6 @@ O público conhecido é uma empresa de transporte de grãos com diversas filiais
 - O preço de venda aplica margem entre 5% e 20% sobre o preço de compra.
 - A margem é inversamente proporcional à quantidade disponível de cada tipo de grão na doca.
 - Criar ou desenhar relatórios com informações importantes para análise administrativa.
-- É obrigatório usar IA na construção da solução e compartilhar o prompt utilizado e o código gerado.
 
 ## Decisões
 
