@@ -138,4 +138,4 @@ docs/          OpenAPI, Postman e estrategia de estabilizacao
 
 ## Uso de IA
 
-O desafio exige uso de IA na construcao da solucao. O registro esta em [USO_DE_IA.md](/Users/jonathasrochadesouza/Developer/repositories/premiersoft-serasa/USO_DE_IA.md).
+O desafio exige uso de IA na construcao da solucao. O registro esta em [USO_DE_IA.md](/Users/jonathasrochadesouza/Developer/repositories/premiersoft-serasa/USO_DE_IA.md), e os prompts utilizados estao versionados em [docs/prompts-utilizados.md](/Users/jonathasrochadesouza/Developer/repositories/premiersoft-serasa/docs/prompts-utilizados.md).
