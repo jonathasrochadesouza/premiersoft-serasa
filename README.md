@@ -59,8 +59,8 @@ docker compose up -d --build
 ## Documentacao da API
 
 - Swagger UI dinamico: `http://localhost:3333/docs`
-- Arquivo OpenAPI versionado: [docs/openapi.yaml](/Users/jonathasrochadesouza/Developer/repositories/premiersoft-serasa/docs/openapi.yaml)
-- Collection Postman: [docs/postman_collection.json](/Users/jonathasrochadesouza/Developer/repositories/premiersoft-serasa/docs/postman_collection.json)
+- Arquivo OpenAPI versionado: [docs/openapi.yaml](docs/openapi.yaml)
+- Collection Postman: [docs/postman_collection.json](docs/postman_collection.json)
 
 ![Swagger UI da API](docs/assets/swagger-api-docs.png)
 
@@ -110,7 +110,7 @@ pnpm run load:100ms:docker
 - `GET /reports/dock-stock`: estoque de doca.
 - `GET /reports/scale-throughput`: throughput por balanca.
 
-O contrato completo esta em [docs/openapi.yaml](/Users/jonathasrochadesouza/Developer/repositories/premiersoft-serasa/docs/openapi.yaml).
+O contrato completo esta em [docs/openapi.yaml](docs/openapi.yaml).
 
 ## Estabilizacao
 
@@ -121,7 +121,7 @@ As leituras sao agrupadas por `scaleId + plate`. Cada grupo mantem uma janela mo
 - a variacao entre maior e menor peso fica dentro da tolerancia;
 - a presenca do caminhao ainda nao foi processada.
 
-O peso bruto estabilizado e calculado por media aparada. A explicacao completa esta em [docs/stabilization.md](/Users/jonathasrochadesouza/Developer/repositories/premiersoft-serasa/docs/stabilization.md).
+O peso bruto estabilizado e calculado por media aparada. A explicacao completa esta em [docs/stabilization.md](docs/stabilization.md).
 
 ## Estrutura
 
@@ -135,7 +135,3 @@ prisma/        schema e migrations
 tests/         testes unitarios e de integracao
 docs/          OpenAPI, Postman e estrategia de estabilizacao
 ```
-
-## Uso de IA
-
-O desafio exige uso de IA na construcao da solucao. O registro esta em [USO_DE_IA.md](/Users/jonathasrochadesouza/Developer/repositories/premiersoft-serasa/USO_DE_IA.md), e os prompts utilizados estao versionados em [docs/prompts-utilizados.md](/Users/jonathasrochadesouza/Developer/repositories/premiersoft-serasa/docs/prompts-utilizados.md).
